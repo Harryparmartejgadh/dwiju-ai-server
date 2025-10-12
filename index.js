@@ -1,3 +1,4 @@
+// ✅ Dwiju AI Server - Fully Verified Version
 import express from "express";
 import fetch from "node-fetch";
 import cors from "cors";
@@ -7,9 +8,9 @@ app.use(cors());
 app.use(express.json());
 
 // 🔑 OpenAI API Key
-const OPENAI_KEY = "sk-proj-rgLlxCRNssoR9GVt36RsvK-tPGdxwoRhjRR6basOHQWJbWyVQPObeyI2bicvnxPaoKKhjsbTgRT3BlbkFJD7O-Yp38_5xXohB_qS1x3Zn2nSvQozD7v-BnHY30C4OZa2apRPjAjBmBm3AJ0rJmtNUA";
+const OPENAI_KEY = "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; // અહીં તમારો સાચો OpenAI key મુકો
 
-// 🧠 Chat endpoint
+// 🧠 Chat route
 app.post("/chat", async (req, res) => {
   try {
     const userMsg = req.body.message || "Hello Dwiju!";
@@ -26,17 +27,20 @@ app.post("/chat", async (req, res) => {
     });
 
     const data = await response.json();
-    const reply = data?.choices?.[0]?.message?.content || "⚠ No reply received.";
+    const reply = data?.choices?.[0]?.message?.content || "⚠ No valid reply from OpenAI.";
+    console.log("✅ User:", userMsg, "\n🤖 Dwiju:", reply);
     res.json({ reply });
-  } catch (err) {
-    console.error("Error:", err);
-    res.status(500).json({ reply: "❌ Error: Unable to connect to OpenAI." });
+  } catch (error) {
+    console.error("❌ Error:", error);
+    res.status(500).json({ reply: "❌ Error connecting to OpenAI API." });
   }
 });
 
-// 🌍 Root route for checking server status
-app.get("/", (req, res) => res.send("✅ Dwiju Server Active and Connected to OpenAI!"));
+// 🌍 Root route (status check)
+app.get("/", (req, res) => {
+  res.send("✅ Dwiju Server Active and Ready for AI Chat!");
+});
 
-// 🟢 Important: Use dynamic port for Render
+// 🟢 Dynamic Port (Render requirement)
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(✅ Dwiju Server running on port ${PORT}));
+app.listen(PORT, () => console.log(🚀 Dwiju Server running on port ${PORT}));
