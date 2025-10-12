@@ -6,7 +6,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const OPENAI_KEY = "તમારી_OPENAI_API_KEY";
+const OPENAI_KEY = "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";
 
 app.post("/chat", async (req, res) => {
   const userMsg = req.body.message || "Hello Dwiju!";
