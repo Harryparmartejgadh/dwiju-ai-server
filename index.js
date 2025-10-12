@@ -6,18 +6,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const OPENAI_KEY = "sk-proj-rgLlxCRNssoR9GVt36RsvK-tPGdxwoRhjRR6basOHQWJbWyVQPObeyI2bicvnxPaoKKhjsbTgRT3BlbkFJD7O-Yp38_5xXohB_qS1x3Zn2nSvQozD7v-BnHY30C4OZa2apRPjAjBmBm3AJ0rJmtNUA";
+// 🔑 OpenAI API Key
+const OPENAI_KEY = "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";
 
+// 🌍 Chat endpoint
 app.post("/chat", async (req, res) => {
   try {
-    const userMsg = req.body.message;
+    const userMsg = req.body.message || "Hello Dwiju!";
 
-    // ❌ જો મેસેજ ખાલી હોય તો જ “Hello Dwiju” fallback રાખો
-    if (!userMsg || userMsg.trim() === "") {
-      return res.json({ reply: "🙏 Please type or speak something..." });
-    }
-
-    // ✅ OpenAI API Call
+    // 🔹 Call OpenAI API
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -34,32 +31,25 @@ app.post("/chat", async (req, res) => {
 
     if (data.error) {
       console.error("❌ OpenAI Error:", data.error);
-      return res.json({ reply: "⚠️ Error: " + data.error.message });
+      return res.json({ reply: "⚠️ Error from OpenAI: " + data.error.message });
     }
 
     const reply = data.choices?.[0]?.message?.content || "⚠️ No reply from OpenAI.";
     res.json({ reply });
+
   } catch (err) {
     console.error("❌ Server Error:", err);
     res.status(500).json({ reply: "Internal server error." });
   }
 });
 
-app.get("/", (req, res) => res.send("✅ Dwiju Server Active & Connected to OpenAI!"));
-
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log("🚀 Dwiju Server running on port " + PORT));    res.json({ reply });
-  } catch (err) {
-    console.error("❌ Server Error:", err);
-    res.status(500).json({ reply: "Internal server error." });
-  }
-});
-
-// 🟢 Root Route
+// 🟢 Root check
 app.get("/", (req, res) => {
   res.send("✅ Dwiju Server Active & Connected to OpenAI!");
 });
 
-// 🌐 Server Start
+// 🚀 Start server
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log("🚀 Dwiju Server running on port " + PORT));// 🌐 Server Start
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log("🚀 Dwiju Server running on port " + PORT));
