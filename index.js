@@ -14,7 +14,7 @@ app.post("/chat", async (req, res) => {
   try {
     const userMsg = req.body.message || "Hello Dwiju!";
 
-    // 🔹 Call OpenAI API
+    // ✅ OpenAI API Call
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -49,7 +49,5 @@ app.get("/", (req, res) => {
 });
 
 // 🚀 Start server
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log("🚀 Dwiju Server running on port " + PORT));// 🌐 Server Start
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log("🚀 Dwiju Server running on port " + PORT));
