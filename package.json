@@ -1,8 +1,6 @@
 {
   "name": "dwiju-ai-server",
   "version": "1.0.0",
-  "description": "Dwiju backend server for AI responses",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js"
