@@ -7,8 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // 🔑 OpenAI API Key
-const OPENAI_KEY = "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";
-
+const OPENAI_KEY = process.env.OPENAI_KEY;
 // 🌍 Chat endpoint
 app.post("/chat", async (req, res) => {
   try {
