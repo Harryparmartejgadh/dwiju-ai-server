@@ -1,9 +1,8 @@
-// ✅ index.js — Final Render-ready version
+// ✅ index.js — Final version using built-in fetch (Node 18+ / Node 22)
 import express from "express";
-import fetch from "node-fetch";
 import cors from "cors";
 
-// 🔹 Try to load dotenv safely (no crash if not installed)
+// 🔹 Try loading dotenv safely
 try {
   const dotenv = await import("dotenv");
   dotenv.config();
@@ -31,6 +30,7 @@ app.post("/chat", async (req, res) => {
   try {
     const userMsg = req.body.message || "Hello Dwiju!";
 
+    // ✅ Built-in fetch — no need for node-fetch
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
