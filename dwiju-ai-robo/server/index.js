@@ -30,7 +30,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',') || "http://localhost:3000",
+    origin: (process.env.CORS_ORIGIN || 'http://localhost:3000').split(',').map(s => s.trim()),
     credentials: true,
     methods: ["GET", "POST"]
   }
@@ -65,7 +65,7 @@ app.use(helmet({
 // CORS configuration
 app.use(cors({
   origin: function(origin, callback) {
-    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'];
+    const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000').split(',').map(s => s.trim());
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -147,9 +147,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Error handling middleware
-app.use(errorHandler);
-
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 
@@ -157,6 +154,9 @@ app.use((req, res) => {
     path: req.originalUrl 
   });
 });
+
+// Error handler must follow routes and 404.
+app.use(errorHandler);
 
 // Start server
 httpServer.listen(PORT, () => {
