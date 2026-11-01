@@ -17,6 +17,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: No-loss source and route regression gate
+        working-directory: .
         env:
           NO_LOSS_SCOPE: 'dwiju-ai-robo/server/'
         run: node scripts/no-loss-gate.mjs
