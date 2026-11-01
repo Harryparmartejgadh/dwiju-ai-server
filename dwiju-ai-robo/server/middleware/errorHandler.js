@@ -14,6 +14,8 @@ export const errorHandler = (err, req, res, next) => {
     code: 'INTERNAL_ERROR'
   };
 
+  if (err.name === 'MulterError') { error = { message: 'Upload exceeds configured limits or is malformed', status: 400, code: 'UPLOAD_LIMIT' }; }
+
   // MongoDB/Mongoose errors
   if (err.name === 'ValidationError') {
     const messages = Object.values(err.errors).map(val => val.message);

@@ -15,6 +15,7 @@ import featuresRoutes from './routes/features.js';
 import uploadRoutes from './routes/upload.js';
 import visionRoutes from './routes/vision.js';
 import adminRoutes from './routes/admin.js';
+import { validateServerConfig } from './config/validate.js';
 
 // Import middleware
 import { authenticateToken } from './middleware/auth.js';
@@ -23,12 +24,13 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 // Load environment variables
 dotenv.config();
+validateServerConfig();
 
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',') || "http://localhost:3000",
+    origin: (process.env.CORS_ORIGIN || 'http://localhost:3000').split(',').map(s => s.trim()),
     credentials: true,
     methods: ["GET", "POST"]
   }
@@ -63,7 +65,7 @@ app.use(helmet({
 // CORS configuration
 app.use(cors({
   origin: function(origin, callback) {
-    const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3000'];
+    const allowedOrigins = (process.env.CORS_ORIGIN || 'http://localhost:3000').split(',').map(s => s.trim());
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -145,16 +147,16 @@ io.on('connection', (socket) => {
   });
 });
 
-// Error handling middleware
-app.use(errorHandler);
-
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ 
     error: 'Route not found',
     path: req.originalUrl 
   });
 });
+
+// Error handler must follow routes and 404.
+app.use(errorHandler);
 
 // Start server
 httpServer.listen(PORT, () => {

@@ -1,6 +1,6 @@
-const express = require('express');
-const Feature = require('../models/Feature');
-const { requireAdmin, requireModerator } = require('../middleware/auth');
+import express from 'express';
+import Feature from '../models/Feature.js';
+import { authenticateToken, requireAdmin, requireModerator } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -130,7 +130,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/features - Create new feature (Admin only)
-router.post('/', requireAdmin, async (req, res) => {
+router.post('/', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { 
       title, 
@@ -182,7 +182,7 @@ router.post('/', requireAdmin, async (req, res) => {
 });
 
 // PUT /api/features/:id - Update feature (Admin/Moderator only)
-router.put('/:id', requireModerator, async (req, res) => {
+router.put('/:id', authenticateToken, requireModerator, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
@@ -220,7 +220,7 @@ router.put('/:id', requireModerator, async (req, res) => {
 });
 
 // DELETE /api/features/:id - Delete/deactivate feature (Admin only)
-router.delete('/:id', requireAdmin, async (req, res) => {
+router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { permanent = false } = req.query;
@@ -266,7 +266,7 @@ router.delete('/:id', requireAdmin, async (req, res) => {
 });
 
 // POST /api/features/bulk-import - Bulk import features (Admin only)
-router.post('/bulk-import', requireAdmin, async (req, res) => {
+router.post('/bulk-import', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { features, overwrite = false } = req.body;
 
@@ -341,4 +341,4 @@ router.post('/bulk-import', requireAdmin, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

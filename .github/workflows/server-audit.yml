@@ -1,0 +1,33 @@
+name: Dwiju server security and integration
+on:
+  push:
+    branches: [main, audit/security-server-20261101]
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dwiju-ai-robo
+    env:
+      JWT_SECRET: ci-only-long-random-looking-test-secret-1234567890
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: No-loss source and route regression gate
+        working-directory: .
+        env:
+          NO_LOSS_SCOPE: 'dwiju-ai-robo/server/'
+        run: node scripts/no-loss-gate.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund --legacy-peer-deps
+
+      - name: Check JavaScript syntax
+        run: find server -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Configuration and API integration tests
+        run: npm run test:integration
