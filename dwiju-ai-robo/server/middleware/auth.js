@@ -1,3 +1,4 @@
+import { getJwtSecret } from '../config/validate.js';
 import jwt from 'jsonwebtoken';
 
 export const authenticateToken = (req, res, next) => {
@@ -11,7 +12,7 @@ export const authenticateToken = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret', (err, decoded) => {
+  jwt.verify(token, getJwtSecret(), (err, decoded) => {
     if (err) {
       if (err.name === 'TokenExpiredError') {
         return res.status(401).json({ 
