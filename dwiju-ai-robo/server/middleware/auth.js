@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = typeof authHeader === 'string' && /^Bearer [^ ]+$/.test(authHeader) ? authHeader.slice(7) : null;
 
   if (!token) {
     return res.status(401).json({ 
@@ -12,7 +12,7 @@ export const authenticateToken = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, getJwtSecret(), (err, decoded) => {
+  jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] }, (err, decoded) => {
     if (err) {
       if (err.name === 'TokenExpiredError') {
         return res.status(401).json({ 
@@ -32,6 +32,9 @@ export const authenticateToken = (req, res, next) => {
       });
     }
 
+    if (!decoded || typeof decoded !== 'object' || !decoded.userId || !['user', 'admin', 'moderator'].includes(decoded.role)) {
+      return res.status(401).json({ error: 'Invalid token claims', code: 'INVALID_CLAIMS' });
+    }
     req.user = decoded;
     next();
   });
