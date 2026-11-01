@@ -1,0 +1,18 @@
+name: Dwiju server security and syntax checks
+on:
+  push:
+    branches: [main, audit/security-server-20261101]
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript syntax
+        run: |
+          find dwiju-ai-robo/server -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Run configuration tests
+        run: node --test dwiju-ai-robo/tests/config.test.mjs
