@@ -12,3 +12,24 @@ test('unauthenticated protected endpoints return 401',async()=>{for(const path o
 test('vision validates image input and requires a configured provider',async()=>{const token=jwt.sign({userId:'test',role:'user'},process.env.JWT_SECRET);const res=await request(app).post('/api/vision').set('Authorization','Bearer '+token).send({image:'invalid'});assert.equal(res.status,400);});
 test('admin rejects non-admin token',async()=>{const token=jwt.sign({userId:'test',role:'user'},process.env.JWT_SECRET);const res=await request(app).get('/api/admin/summary').set('Authorization','Bearer '+token);assert.equal(res.status,403);});
 test('upload validates and does not claim persistence',async()=>{const token=jwt.sign({userId:'test',role:'user'},process.env.JWT_SECRET);const res=await request(app).post('/api/upload').set('Authorization','Bearer '+token).attach('file',Buffer.from('hello'),'hello.txt');assert.equal(res.status,200);assert.equal(res.body.stored,false);});
+
+test('rejects JWT signed with wrong secret',async()=>{
+ const token=jwt.sign({userId:'test',role:'admin'},'not-the-real-secret');
+ const res=await request(app).get('/api/admin/summary').set('Authorization','Bearer '+token);
+ assert.equal(res.status,401);
+});
+test('rejects JWT without required role claim',async()=>{
+ const token=jwt.sign({userId:'test'},process.env.JWT_SECRET);
+ const res=await request(app).get('/api/admin/summary').set('Authorization','Bearer '+token);
+ assert.equal(res.status,401);
+});
+test('rejects unsupported JWT algorithm',async()=>{
+ const token=jwt.sign({userId:'test',role:'admin'},process.env.JWT_SECRET,{algorithm:'HS384'});
+ const res=await request(app).get('/api/admin/summary').set('Authorization','Bearer '+token);
+ assert.equal(res.status,401);
+});
+test('upload rejects unsupported MIME types',async()=>{
+ const token=jwt.sign({userId:'test',role:'user'},process.env.JWT_SECRET);
+ const res=await request(app).post('/api/upload').set('Authorization','Bearer '+token).attach('file',Buffer.from('test'),'sample.exe');
+ assert.equal(res.status,400);
+});
