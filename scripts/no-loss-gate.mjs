@@ -30,6 +30,10 @@ for(const p of baseline.filter(x=>/\.(js|jsx|ts|tsx)$/.test(x)&&important(x))){
  for(const [label,patterns] of [['route',routePatterns],['feature',featurePatterns]]){
   const b=inventory(before,patterns),a=inventory(after,patterns);
   for(const item of b)if(!a.has(item)){
+   // Express 5-safe replacement of legacy app.use('*', handler): an unpathed
+   // final app.use(handler) remains a catch-all. Only allow this equivalence
+   // for the wildcard in a file with a preserved 404 response contract.
+   if(label==='route' && item==='*' && /app\.use\s*\(\s*['\"`]\*['\"`]\s*,/.test(before) && /app\.use\s*\(\s*\(req\s*,\s*res\)\s*=>/.test(after) && /status\s*\(\s*404\s*\)/.test(after) && /Route not found/.test(before) && /Route not found/.test(after))continue;
    const entry={path:p,value:item};
    if(label==='route')report.routeRegressions.push(entry);else report.featureRegressions.push(entry);
    errors.push(label+' inventory lost: '+p+' :: '+item);
