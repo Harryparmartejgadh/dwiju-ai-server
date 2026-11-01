@@ -19,7 +19,7 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund --legacy-peer-deps
-        # Temporary compatibility workaround for existing React 19 / react-speech-kit peer conflict.
+
       - name: Check JavaScript syntax
         run: find server -name '*.js' -print0 | xargs -0 -n1 node --check
       - name: Configuration and API integration tests
