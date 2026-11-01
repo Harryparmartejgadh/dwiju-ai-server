@@ -1,3 +1,4 @@
+import { getJwtSecret } from '../config/validate.js';
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
@@ -49,7 +50,7 @@ router.post('/register', async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'fallback_secret',
+      getJwtSecret(),
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
@@ -106,7 +107,7 @@ router.post('/login', async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'fallback_secret',
+      getJwtSecret(),
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
@@ -139,7 +140,7 @@ router.post('/refresh', async (req, res) => {
     }
 
     // Verify the existing token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    const decoded = jwt.verify(token, getJwtSecret());
     
     // Find user
     const user = await User.findById(decoded.userId);
@@ -150,7 +151,7 @@ router.post('/refresh', async (req, res) => {
     // Generate new token
     const newToken = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'fallback_secret',
+      getJwtSecret(),
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
@@ -196,7 +197,7 @@ router.get('/profile', async (req, res) => {
     }
 
     const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    const decoded = jwt.verify(token, getJwtSecret());
     
     const user = await User.findById(decoded.userId);
     if (!user) {
@@ -240,7 +241,7 @@ router.put('/profile', async (req, res) => {
     }
 
     const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    const decoded = jwt.verify(token, getJwtSecret());
     
     const { firstName, lastName, bio, language, timezone, preferences } = req.body;
     
