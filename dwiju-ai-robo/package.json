@@ -13,7 +13,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
-    "test:integration": "node --test tests/config.test.mjs tests/routes.test.mjs"
+    "test:integration": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
