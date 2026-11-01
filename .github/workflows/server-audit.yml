@@ -1,4 +1,4 @@
-name: Dwiju server security and syntax checks
+name: Dwiju server security and integration
 on:
   push:
     branches: [main, audit/security-server-20261101]
@@ -6,13 +6,20 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dwiju-ai-robo
+    env:
+      JWT_SECRET: ci-only-long-random-looking-test-secret-1234567890
+      NODE_ENV: test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate JavaScript syntax
-        run: |
-          find dwiju-ai-robo/server -name '*.js' -print0 | xargs -0 -n1 node --check
-      - name: Run configuration tests
-        run: node --test dwiju-ai-robo/tests/config.test.mjs
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Check JavaScript syntax
+        run: find server -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Configuration and API integration tests
+        run: npm run test:integration
