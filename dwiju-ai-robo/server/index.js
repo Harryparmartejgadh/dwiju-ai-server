@@ -15,6 +15,7 @@ import featuresRoutes from './routes/features.js';
 import uploadRoutes from './routes/upload.js';
 import visionRoutes from './routes/vision.js';
 import adminRoutes from './routes/admin.js';
+import { validateServerConfig } from './config/validate.js';
 
 // Import middleware
 import { authenticateToken } from './middleware/auth.js';
@@ -23,6 +24,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 // Load environment variables
 dotenv.config();
+validateServerConfig();
 
 const app = express();
 const httpServer = createServer(app);
@@ -149,7 +151,7 @@ io.on('connection', (socket) => {
 app.use(errorHandler);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).json({ 
     error: 'Route not found',
     path: req.originalUrl 
